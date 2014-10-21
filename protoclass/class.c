@@ -8,6 +8,14 @@
 
 unsigned char* memmem( unsigned char*, unsigned char*, int, int);
 
+/*
+ * Funzione che mi permette di "copiare" il corpo di un'altra funzione,
+ * cercando di non rompere le call che chiaramente sono "sballate" rispetto
+ * al nuovo indirizzo
+ *
+ * @ addr: è l'indirizzo della funzione da copiare
+ * @ size: è la grandezza in byte della funzione da copiare
+ */
 void*
 function_copy( fClass addr, int size )
 {
@@ -40,6 +48,17 @@ function_copy( fClass addr, int size )
 	return func;
 }
 
+/*
+ * Procedura che inizializza la classe sostituendo nelle funzioni della classe
+ * il valore THIS (0x00000001) con l'indirizzo effettivo della classe.
+ * Con questo "trucco" ogni funzione "nuova"(perchè copiata) della classe avrà
+ * il puntatore 'this' che punta alla classe stessa.
+ *
+ * @ cl: La classe da inzializzare
+ * @ var: Numero di varabili della classe, da "saltare" nell'inizializzazione
+ * @ size: La grandezza della classe (sizeof)
+ * @ extends: Estensione aggiunta per "saltare" l'inizializzazione di alcuni elementi come CLASSHEAD
+ */
 void
 superclass( void* cl, int var, int size, int extends )
 {
@@ -78,6 +97,7 @@ superclass( void* cl, int var, int size, int extends )
 	}
 }
 
+/* memmem reimplementato perchè mi ero scordato che già c'era */
 unsigned char*
 memmem( unsigned char* addr, unsigned char* find, int size, int len )
 {
@@ -90,6 +110,14 @@ memmem( unsigned char* addr, unsigned char* find, int size, int len )
 	return NULL;
 }
 
+/*
+ * Funzione che permette di generare le info della classe più facilmente.
+ *
+ * @ name: Il nome della classe
+ * @ f: Il puntatore a funzione al 'new' della classe
+ * @ list: Lista dei metodi
+ * @ size: Dimensione della lista
+ */
 struct classInfo*
 genInfo( char* name, fClass f, struct classMethod list[], int size)
 {
@@ -105,6 +133,13 @@ genInfo( char* name, fClass f, struct classMethod list[], int size)
 	return c;
 }
 
+/*
+ * Funzione che restituisce il puntatore a funzione di un determinato metodo
+ * utilizzando il puntatore alla classe e l'offset del metodo.
+ *
+ * @ class: La classe
+ * @ name: Nome del metodo (che è nella lista)
+ */
 fClass
 getMethod( void* class, char* name )
 {

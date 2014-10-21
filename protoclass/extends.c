@@ -6,6 +6,7 @@
 #include <stddef.h>
 #include <class.h>
 
+/* Classe di base */
 
 struct TestArray { /* TestArray */
 #define CLASS_TestArray	CLASS_HEAD; int* array; int nsize; int (*size)();
@@ -14,6 +15,7 @@ struct TestArray { /* TestArray */
 
 struct TestArray* TestArray(int);
 
+/* Classe estesa */
 
 struct NTest { /* extends TestArray */
 	CLASS_TestArray
@@ -27,7 +29,7 @@ struct NTest* NTest(int);
 int
 TA_size( )
 {
-	struct TestArray *this = (struct TestArray*)THIS;
+	struct TestArray *this = (struct TestArray*)THIS; /* Verrà sostituito in run-time con l'indirizzo della classe associata */
 
 	return this->nsize;
 }
@@ -36,16 +38,16 @@ PROTOTYPE_FUNC( TA_size );
 
 struct TestArray* TestArray( int test )
 {
-	struct classMethod list[] = {
+	struct classMethod list[] = { /* Dichiarazione della lista dei metodi */
 		METHOD( size, struct TestArray ),
 	};
 	struct TestArray* ta = malloc( sizeof(struct TestArray) );
 
-	*ta = (struct TestArray){ genInfo(ID(TestArray), MLIST(list) ), NULL, test,
+	*ta = (struct TestArray){ genInfo(ID(TestArray), MLIST(list) ), NULL, test, /* Generazione delle informazioni e copia dei metodi */
 		FCOPY( TA_size ),
 	};
 
-	superclass( ta, 2, sizeof(struct TestArray), 1 );
+	superclass( ta, 2, sizeof(struct TestArray), 1 ); /* Inizializzazione */
 
 	return ta;
 }
@@ -66,17 +68,17 @@ PROTOTYPE_FUNC( NT_push );
 struct NTest* NTest( int arg ) EXTENDS(TestArray, 2, arg) {
 	struct NTest* nclass = malloc(sizeof(struct NTest));
 
-	COPYCLASS(nclass, mcl, 0);
+	COPYCLASS(nclass, mcl, 0); /* Copio la classe da estendere 'mcl'(proveniente dal define EXTENDS) in nclass */
 
-	struct classMethod list[] = {
+	struct classMethod list[] = { /* Dichiaro i nuovi metodi (anche se alcuni li posso copiare da mcl */
 		METHOD( size, struct NTest ),
 		METHOD( push, struct NTest ),
 	};
-	nclass->cinfo = genInfo( ID(NTest), MLIST(list) );
+	nclass->cinfo = genInfo( ID(NTest), MLIST(list) ); /* Genero le nuove informazioni */
 
-	CLASS_ELEMENT( push, NT_push );
+	CLASS_ELEMENT( push, NT_push ); /* Setto la nuova funzione 'push' */
 	
-	superclass( nclass, nvar, sizeof(struct NTest), 1 );
+	superclass( nclass, nvar, sizeof(struct NTest), 1 ); /* Inizializzazione */
 	return nclass;
 } ENDEX
 

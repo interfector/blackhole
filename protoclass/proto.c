@@ -25,16 +25,16 @@ PROTOTYPE_FUNC( TA_size );
 
 struct TestArray* TestArray( int test )
 {
-	struct classMethod list[] = {
+	struct classMethod list[] = { /* Creo la lista */
 		METHOD( size, struct TestArray ),	
 	};
 	struct TestArray* ta = malloc( sizeof(struct TestArray) );
 
-	*ta = (struct TestArray){ genInfo(ID(TestArray), MLIST(list) ), NULL, test,
+	*ta = (struct TestArray){ genInfo(ID(TestArray), MLIST(list) ), NULL, test, /* Genero e copio */
 		FCOPY( TA_size ),
 	};
 
-	superclass( ta, 2, sizeof(struct TestArray), 1 );
+	superclass( ta, 2, sizeof(struct TestArray), 1 ); /* Inizializzo */
 
 	return ta;
 }
@@ -46,7 +46,7 @@ main()
 
 	printf("%d\n", ta->size() );
 
-	int (*f)() = (int (*)())getMethod( ta, "size" );
+	int (*f)() = (int (*)())getMethod( ta, "size" ); /* Testo il metodo 'size' */
 
 	printf("%d\n", f() );
 
